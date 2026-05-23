@@ -15,6 +15,7 @@ const allowedOrigins = [
   "http://localhost:3001",
   "http://206.162.244.175:3000",
   "https://harmony-three-blond.vercel.app",
+  "https://diagnostic.shayonsmith.com"
 ].filter(Boolean);
 
 const corsOptions: cors.CorsOptions = {

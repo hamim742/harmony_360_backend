@@ -233,21 +233,31 @@ const dimensions = [
   },
 ];
 
-export async function seedQuestions() {
-  await prisma.answer.deleteMany();
-  await prisma.assessmentResult.deleteMany();
-  await prisma.assessment.deleteMany();
-  await prisma.lead.deleteMany();
-  await prisma.question.deleteMany();
-  await prisma.dimension.deleteMany();
+export async function seedQuestions(force = false) {
+  const existingQuestionsCount = await prisma.question.count();
+  if (!force && existingQuestionsCount > 0) {
+    console.log(`Questions already seeded (${existingQuestionsCount} questions found). Skipping seed.`);
+    return;
+  }
+
+  console.log('Seeding dimensions and questions...');
 
   for (const dimension of dimensions) {
-    const createdDimension = await prisma.dimension.create({
-      data: {
+    const createdDimension = await prisma.dimension.upsert({
+      where: { key: dimension.key },
+      update: {
+        title: dimension.title,
+        order: dimension.order,
+      },
+      create: {
         key: dimension.key,
         title: dimension.title,
         order: dimension.order,
       },
+    });
+
+    await prisma.question.deleteMany({
+      where: { dimensionId: createdDimension.id },
     });
 
     for (let i = 0; i < dimension.questions.length; i++) {
@@ -263,4 +273,17 @@ export async function seedQuestions() {
   }
 
   console.log('Seed completed successfully.');
+}
+
+if (require.main === module) {
+  seedQuestions(true)
+    .then(async () => {
+      await prisma.$disconnect();
+      process.exit(0);
+    })
+    .catch(async (error) => {
+      console.error('Seed error:', error);
+      await prisma.$disconnect();
+      process.exit(1);
+    });
 }

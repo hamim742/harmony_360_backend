@@ -13,22 +13,19 @@ const main = () => {
     console.log(`Harmony 360 server running on port http://localhost:${port}`);
   });
 
-  seedQuestions()
-    .catch((error) => {
-      console.error(error);
-      process.exit(1);
-    })
-    .finally(async () => {
-      await prisma.$disconnect();
-    });
+  seedQuestions().catch((error) => {
+    console.error("Failed to seed questions:", error);
+  });
 
-  const exitHandler = () => {
+  const exitHandler = async () => {
     if (server) {
-      server.close(() => {
+      server.close(async () => {
         console.log("Server closed");
+        await prisma.$disconnect();
         process.exit(1);
       });
     } else {
+      await prisma.$disconnect();
       process.exit(1);
     }
   };

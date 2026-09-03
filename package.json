@@ -4,9 +4,9 @@
   "description": "Harmony 360 assessment backend using Node.js, Express, TypeScript, MongoDB, Prisma",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "build": "prisma generate && tsc",
-    "start": "node dist/server.js",
+    "dev": "node init && ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "node init && prisma generate && tsc",
+    "start": "node init && node dist/server.js",
     "postinstall": "prisma generate",
     "seed": "ts-node-dev --transpile-only src/app/utils/seed.ts"
   },
@@ -21,6 +21,7 @@
     "http-status": "latest",
     "jsonwebtoken": "latest",
     "morgan": "latest",
+    "node-fetch": "^3.3.2",
     "nodemailer": "latest",
     "pdfkit": "latest",
     "prisma": "^6.19.0",
